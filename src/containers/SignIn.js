@@ -2,7 +2,7 @@ import React from 'react'
 import { StyledFirebaseAuth } from 'react-firebaseui'
 
 import { getUiConfig } from '../firebase'
-import { withFirebase } from '../components/FirebaseContext'
+import { withFirebase } from 'react-redux-firebase'
 import Header from '../components/header'
 
 const SignIn = ({ firebase }) => (

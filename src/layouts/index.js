@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
+import { createStore, combineReducers } from 'redux'
 import { Provider as ReduxProvider } from 'react-redux'
+import { ReactReduxFirebaseProvider, firebaseReducer } from 'react-redux-firebase'
 
 import getFirebase from '../firebase'
-import FirebaseContext from '../components/FirebaseContext'
 import SignIn from '../containers/SignIn'
-import { createStoreWithFirebase } from '../store'
+
 
 class Layout extends Component {
   state = {
@@ -22,7 +23,12 @@ class Layout extends Component {
       const firebase = getFirebase(values[0])
       this.setState({ firebase })
 
-      const store = createStoreWithFirebase(firebase)
+      // Add firebase to reducers
+      const rootReducer = combineReducers({
+        firebase: firebaseReducer,
+      })
+      const initialState = {}
+      const store = createStore(rootReducer, initialState)
       this.setState({ store })
 
       firebase.auth().onAuthStateChanged(user => {
@@ -37,14 +43,23 @@ class Layout extends Component {
 
   render = () => {
     const { firebase, authenticated, store } = this.state
-
     if (!firebase || !store) return null
+
+    const rrfConfig = {
+      userProfile: 'users',
+    }
+
+    const rrfProps = {
+      firebase,
+      config: rrfConfig,
+      dispatch: store.dispatch,
+    }
 
     return (
       <ReduxProvider store={store}>
-        <FirebaseContext.Provider value={firebase}>
+        <ReactReduxFirebaseProvider {...rrfProps}>
           {authenticated ? this.props.children : <SignIn />}
-        </FirebaseContext.Provider>
+        </ReactReduxFirebaseProvider>
       </ReduxProvider>
     )
   }

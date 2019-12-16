@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { withFirebase } from '../components/FirebaseContext'
+import { withFirebase } from 'react-redux-firebase'
 
 class FetchingExample extends Component {
   state = {
